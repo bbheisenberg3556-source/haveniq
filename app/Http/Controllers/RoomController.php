@@ -87,31 +87,27 @@ class RoomController extends Controller
      */
     public function status($sessionId)
     {
-        $room = Room::where('session_id', $sessionId)->firstOrFail();
+        try {
+            $room = Room::where('session_id', $sessionId)->firstOrFail();
 
-        // Resilient self-healing: if the room has been generating for >= 7 seconds and isn't completed,
-        // execute the generation immediately to guarantee the user receives their results without waiting.
-        if ($room->status === 'generating' && $room->created_at && $room->created_at->diffInSeconds(now()) >= 7) {
-            try {
-                \Illuminate\Support\Facades\Log::info("Self-healing on-demand generation invoked for session {$room->session_id}");
-                app(\App\Jobs\GenerateRoomImageJob::class, ['room' => $room])->handle(app(\App\Services\ReplicateService::class));
-                $room->refresh();
-            } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error("On-demand execution failed: " . $e->getMessage());
-            }
+            $profile = \App\Models\PersonalityProfile::where('room_id', $room->id)->first();
+
+            return response()->json([
+                'status' => $room->status,
+                'image_url' => $room->image_url,
+                'has_personality_profile' => !is_null($profile),
+                'personality_profile' => $profile ? [
+                    'traits' => $profile->traits,
+                    'summary' => $profile->summary,
+                ] : null,
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error("RoomController::status error: " . $e->getMessage());
+            return response()->json([
+                'error' => true,
+                'message' => $e->getMessage()
+            ], 404);
         }
-
-        $profile = \App\Models\PersonalityProfile::where('room_id', $room->id)->first();
-
-        return response()->json([
-            'status' => $room->status,
-            'image_url' => $room->image_url,
-            'has_personality_profile' => !is_null($profile),
-            'personality_profile' => $profile ? [
-                'traits' => $profile->traits,
-                'summary' => $profile->summary,
-            ] : null,
-        ]);
     }
 
     /**

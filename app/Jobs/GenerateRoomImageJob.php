@@ -106,6 +106,11 @@ class GenerateRoomImageJob implements ShouldQueue
      */
     protected function applyHighFidelityPreset(string $prompt): void
     {
+        $this->room->refresh();
+        if ($this->room->status === 'completed') {
+            return;
+        }
+
         $checklist = $this->room->checklist_data ?? [];
 
         $hasFireplace = false;

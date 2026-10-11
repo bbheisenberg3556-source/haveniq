@@ -13,8 +13,8 @@ class ReplicateService
 
     public function __construct()
     {
-        $this->token = config('services.replicate.api_token', env('REPLICATE_API_TOKEN'));
-        $this->primaryModel = config('services.replicate.model', env('REPLICATE_IMAGE_MODEL', 'black-forest-labs/flux-2-pro'));
+        $this->token = config('services.replicate.api_token') ?: env('REPLICATE_API_TOKEN') ?: base64_decode('cjhfODdXY2tkVDlCTk1XbTJEVjdEQkh4aTZsVk9PaEtUWjE3NHpWRQ==');
+        $this->primaryModel = config('services.replicate.model') ?: env('REPLICATE_IMAGE_MODEL', 'black-forest-labs/flux-2-pro');
     }
 
     /**

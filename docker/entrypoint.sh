@@ -47,7 +47,8 @@ chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Create storage symlink
-php /var/www/html/artisan storage:link --force || true
+rm -f /var/www/html/public/storage 2>/dev/null || true
+php /var/www/html/artisan storage:link --relative --force || true
 
 # Run database migrations
 echo "--> Running migrations..."

@@ -79,8 +79,9 @@ Return ONLY valid JSON in this exact format:
 
         // List of models in order of preference
         $models = [
+            'gemini-3.8-flash',
             'gemini-3.5-flash-lite',
-            'gemini-3.8-flash'
+            'gemini-3.5-flash',
         ];
 
         if (!empty($this->apiKey)) {

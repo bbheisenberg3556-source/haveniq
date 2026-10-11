@@ -15,40 +15,50 @@ class RoomController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'checklist' => 'required|array',
-        ]);
-
-        $room = \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
-            $room = Room::create([
-                'session_id' => (string) Str::uuid(),
-                'status' => 'generating',
-                'checklist_data' => $request->checklist,
+        try {
+            $request->validate([
+                'checklist' => 'required|array',
             ]);
 
-            foreach ($request->checklist as $category => $items) {
-                if (is_array($items)) {
-                    foreach ($items as $fieldName => $fieldValue) {
-                        ChecklistResponse::create([
-                            'room_id' => $room->id,
-                            'category' => $category,
-                            'field_name' => $fieldName,
-                            'field_value' => is_array($fieldValue) ? json_encode($fieldValue) : (string) $fieldValue,
-                        ]);
+            $room = \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
+                $room = Room::create([
+                    'session_id' => (string) Str::uuid(),
+                    'status' => 'generating',
+                    'checklist_data' => $request->checklist,
+                ]);
+
+                foreach ($request->checklist as $category => $items) {
+                    if (is_array($items)) {
+                        foreach ($items as $fieldName => $fieldValue) {
+                            ChecklistResponse::create([
+                                'room_id' => $room->id,
+                                'category' => $category,
+                                'field_name' => $fieldName,
+                                'field_value' => is_array($fieldValue) ? json_encode($fieldValue) : (string) $fieldValue,
+                            ]);
+                        }
                     }
                 }
-            }
 
-            return $room;
-        });
+                return $room;
+            });
 
-        // Dispatch background job to database queue
-        GenerateRoomImageJob::dispatch($room);
+            // Dispatch background job to database queue
+            GenerateRoomImageJob::dispatch($room);
 
-        return response()->json([
-            'session_id' => $room->session_id,
-            'status' => $room->status,
-        ]);
+            return response()->json([
+                'session_id' => $room->session_id,
+                'status' => $room->status,
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error("RoomController::store failed: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+            return response()->json([
+                'error' => true,
+                'message' => $e->getMessage(),
+                'file' => basename($e->getFile()),
+                'line' => $e->getLine(),
+            ], 500);
+        }
     }
 
     /**

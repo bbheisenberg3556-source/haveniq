@@ -73,6 +73,7 @@ RUN composer dump-autoload --optimize --no-dev
 
 # Copy custom configurations
 COPY docker/php.ini /usr/local/etc/php/conf.d/custom.ini
+COPY docker/zz-docker.conf /usr/local/etc/php-fpm.d/zz-docker.conf
 COPY docker/supervisord.conf /etc/supervisord.conf
 
 # Setup permissions
@@ -81,7 +82,7 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
     && chmod +x /var/www/html/docker/entrypoint.sh
 
 # Expose port (Render automatically maps its assigned $PORT)
-EXPOSE 10000 80
+EXPOSE 10000
 
 # Run entrypoint script
 ENTRYPOINT ["/var/www/html/docker/entrypoint.sh"]

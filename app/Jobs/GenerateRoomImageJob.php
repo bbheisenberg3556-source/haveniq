@@ -130,7 +130,10 @@ class GenerateRoomImageJob implements ShouldQueue
             $preset = 'luxury_penthouse.jpg';
         }
 
-        $presetPath = storage_path('app/public/presets/' . $preset);
+        $presetPath = public_path('presets/' . $preset);
+        if (!file_exists($presetPath)) {
+            $presetPath = storage_path('app/public/presets/' . $preset);
+        }
         $targetFilename = 'rooms/' . $this->room->session_id . '.jpg';
 
         if (file_exists($presetPath)) {

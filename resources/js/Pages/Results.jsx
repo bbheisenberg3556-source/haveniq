@@ -92,7 +92,7 @@ export default function Results({ sessionId }) {
     }
 
     const { image_url, personality_profile } = roomData;
-    const cleanImageUrl = image_url ? image_url.replace(/^http:\/\/localhost(?::\d+)?\/storage/, '/storage') : '/storage/presets/warm_modern.jpg';
+    const cleanImageUrl = image_url ? image_url.replace(/^http:\/\/localhost(?::\d+)?\/storage/, '/storage') : '/presets/warm_modern.jpg';
 
     const handleDownload = () => {
         const link = document.createElement('a');
@@ -126,7 +126,7 @@ export default function Results({ sessionId }) {
                         onClick={() => setIsLightboxOpen(true)}
                         onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = '/storage/presets/warm_modern.jpg';
+                            e.target.src = '/presets/warm_modern.jpg';
                         }} 
                     />
                 </div>

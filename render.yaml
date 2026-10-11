@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: haveniq-app
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: oregon
+    healthCheckPath: /
+    envVars:
+      - key: APP_NAME
+        value: HavenIQ
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        sync: false # Paste your base64: key from local .env
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: info
+      - key: DB_CONNECTION
+        value: sqlite
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: REPLICATE_API_TOKEN
+        sync: false # Replicate API Token
+      - key: GEMINI_API_KEY
+        sync: false # Google Gemini API Key
+      - key: REPLICATE_MODEL
+        value: black-forest-labs/flux-2-pro

@@ -16,18 +16,26 @@ class RoomController extends Controller
     public function store(Request $request)
     {
         try {
-            $request->validate([
-                'checklist' => 'required|array',
-            ]);
+            $checklist = $request->input('checklist');
+            if (empty($checklist) || !is_array($checklist)) {
+                $checklist = $request->except(['_token', 'session_id']);
+            }
 
-            $room = \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
+            if (empty($checklist) || !is_array($checklist)) {
+                return response()->json([
+                    'error' => true,
+                    'message' => 'Checklist data is required and must be an object or array.',
+                ], 422);
+            }
+
+            $room = \Illuminate\Support\Facades\DB::transaction(function () use ($checklist) {
                 $room = Room::create([
                     'session_id' => (string) Str::uuid(),
                     'status' => 'generating',
-                    'checklist_data' => $request->checklist,
+                    'checklist_data' => $checklist,
                 ]);
 
-                foreach ($request->checklist as $category => $items) {
+                foreach ($checklist as $category => $items) {
                     if (is_array($items)) {
                         foreach ($items as $fieldName => $fieldValue) {
                             ChecklistResponse::create([
@@ -47,6 +55,7 @@ class RoomController extends Controller
             GenerateRoomImageJob::dispatch($room);
 
             return response()->json([
+                'message' => 'Room submitted successfully',
                 'session_id' => $room->session_id,
                 'status' => $room->status,
             ]);
@@ -70,15 +79,31 @@ class RoomController extends Controller
         
         $profile = \App\Models\PersonalityProfile::where('room_id', $room->id)->first();
 
+        $imageUrl = $room->image_url;
+        if ($imageUrl && !str_starts_with($imageUrl, 'http')) {
+            $imageUrl = url($imageUrl);
+        }
+
+        $profileData = $profile ? [
+            'traits' => $profile->traits,
+            'summary' => $profile->summary,
+        ] : null;
+
         return response()->json([
             'session_id' => $room->session_id,
             'status' => $room->status,
-            'image_url' => $room->image_url,
+            'image_url' => $imageUrl,
             'checklist_data' => $room->checklist_data,
-            'personality_profile' => $profile ? [
-                'traits' => $profile->traits,
-                'summary' => $profile->summary,
-            ] : null
+            'personality_profile' => $profileData,
+            'profile' => $profileData,
+            'room' => [
+                'id' => $room->id,
+                'session_id' => $room->session_id,
+                'status' => $room->status,
+                'image_url' => $imageUrl,
+                'profile' => $profileData,
+                'personality_profile' => $profileData,
+            ]
         ]);
     }
 
@@ -92,14 +117,30 @@ class RoomController extends Controller
 
             $profile = \App\Models\PersonalityProfile::where('room_id', $room->id)->first();
 
+            $imageUrl = $room->image_url;
+            if ($imageUrl && !str_starts_with($imageUrl, 'http')) {
+                $imageUrl = url($imageUrl);
+            }
+
+            $profileData = $profile ? [
+                'traits' => $profile->traits,
+                'summary' => $profile->summary,
+            ] : null;
+
             return response()->json([
                 'status' => $room->status,
-                'image_url' => $room->image_url,
+                'image_url' => $imageUrl,
                 'has_personality_profile' => !is_null($profile),
-                'personality_profile' => $profile ? [
-                    'traits' => $profile->traits,
-                    'summary' => $profile->summary,
-                ] : null,
+                'personality_profile' => $profileData,
+                'profile' => $profileData,
+                'room' => [
+                    'id' => $room->id,
+                    'session_id' => $room->session_id,
+                    'status' => $room->status,
+                    'image_url' => $imageUrl,
+                    'profile' => $profileData,
+                    'personality_profile' => $profileData,
+                ]
             ]);
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error("RoomController::status error: " . $e->getMessage());

@@ -26,7 +26,7 @@ export default function Results({ sessionId }) {
                 if (data.status === 'completed' && data.has_personality_profile) {
                     clearInterval(pollInterval);
                     fetchFullData();
-                } else if (data.status === 'completed' && attempts >= 25) {
+                } else if (data.status === 'completed' && attempts >= 10) {
                     // Failsafe: if completed but profile took longer, retrieve whatever is ready
                     clearInterval(pollInterval);
                     fetchFullData();
@@ -35,7 +35,7 @@ export default function Results({ sessionId }) {
                 }
             } catch (err) {
                 console.error('Error fetching room status:', err);
-                if (attempts >= 25) {
+                if (attempts >= 35) {
                     setError('Connection lost while checking room status. Please refresh.');
                     clearInterval(pollInterval);
                 }
@@ -53,8 +53,8 @@ export default function Results({ sessionId }) {
             }
         };
 
-        // Poll every 2 seconds
-        pollInterval = setInterval(checkStatus, 2000);
+        // Poll every 2.5 seconds
+        pollInterval = setInterval(checkStatus, 2500);
         checkStatus();
 
         return () => clearInterval(pollInterval);

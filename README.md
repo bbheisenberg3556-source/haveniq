@@ -50,3 +50,4 @@ HavenIQ is a platform where users design their ideal living room through a deepl
    ```
    The app will be available at `http://localhost:8000`.
 # haveniq
+# haveniq

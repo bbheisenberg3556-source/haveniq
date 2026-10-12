@@ -19,43 +19,49 @@ class GeminiService
      */
     public function analyzePersonality(string $base64Image, array $checklistData, string $mimeType = 'image/webp'): ?array
     {
-        $promptText = "You are an expert psychoanalyst and depth psychologist specializing in Jungian environmental psychology and spatial symbolism.
+        $promptText = "Using Jungian and cognitive behavior theory, define the personality and primary character traits of the owner of this room in three simple paragraphs that are easy to understand by the lay person. Avoid psychological jargon.
 
-Analyze the attached image of the living room, alongside the user's checklist selections. Your task is to treat the room's physical objects, spatial configuration, lighting, boundaries, and materials as psychological symbols and subconscious projections of their personality.
-
+Analyze the attached image of the living room alongside the user's checklist selections:
 CHECKLIST DATA:
 " . json_encode($checklistData) . "
 
-Generate exactly 3 profound personality traits.
-
-MANDATORY STRUCTURE FOR EVERY TRAIT:
-Every trait explanation MUST follow this exact 4-part structure:
-1. Anchor — Name a specific object or physical feature visible in the image or checklist (e.g., \"your central hearth\", \"the locked desk drawer\", \"the uncurtained arched window\", \"the isolated low-slung chaise\").
-2. Symbolic interpretation — Explain what that object represents psychologically, using authentic Jungian framing (such as the archetype of the Self, the Shadow, the Persona, inferior or dominant cognitive functions, or tension between conscious order and the unconscious) translated into articulate, plain language.
-3. Personality implication — Address the user directly in the second person (\"you tend to...\"), detailing how this psychological disposition shapes their emotional life, interpersonal relationships, or behavior under stress.
-4. Growth insight — Offer one small, concrete, actionable suggestion for psychological balance.
-
-CLIENT BENCHMARK EXAMPLES OF REQUIRED DEPTH AND TONE:
-- \"Your central hearth represents exceptional emotional empathy and interpersonal stability, acting as an archetypal Self around which domestic warmth gathers. In relationships, you tend to absorb emotional turbulence and anchor those around you, often at the expense of your own boundaries. Growth insight: Practice intentional detachment during others' crises so your empathy remains a conscious choice rather than an involuntary reflex.\"
-- \"The locked desk drawer reflects a repressed inferior thinking function, leading to avoidance of structured planning under stress. When overwhelmed, you tend to compartmentalize administrative realities and procrastinate on rigid logistics, hoping intuitive momentum will carry you through. Growth insight: Establish a weekly 15-minute triage ritual to confront unorganized logistical details before they trigger unconscious anxiety.\"
-
-CRITICAL RULES:
-- Trait Name: A compelling, psychologically evocative title (e.g., \"Emotional Hearth\", \"Compartmentalized Shadow\", \"Guarded Persona\", \"Intuitive Sanctuary\").
-- Confidence Score: Integer between 0 and 100 representing the prominence of this psychological symbol in the design.
-- Explanation: Seamlessly unite all four elements (Anchor, Symbolic interpretation, Personality implication, Growth insight) into a rich, cohesive 3-4 sentence paragraph. Do NOT write superficial decor descriptions. Treat every object as an intimate psychological projection.
-- Overall Summary: A 3-4 sentence Jungian synthesis tying the three insights together into an overarching assessment of the user's psyche, inner tensions, and path toward individuation.
+INSTRUCTIONS:
+1. Provide three clear, relatable paragraphs defining who the owner is, how they think, and their core character traits:
+   - Paragraph 1 (Inner Mindset & Core Disposition): Look at the atmosphere, lighting, and room shape. Describe how they recharge, their general outlook on life, and their need for calm versus stimulation.
+   - Paragraph 2 (Relationships & Social Style): Look at the seating, boundaries, doors, and layout. Describe how they connect with friends and family, their communication style, and how they protect their personal boundaries.
+   - Paragraph 3 (Habits, Strengths & Stress Response): Look at the organization, wall finishes, and decor. Describe how they handle challenges, their decision-making mindset, and their practical strengths in daily life.
+2. Ground each paragraph in tangible elements from the room (e.g. wall colors, window views, seating arrangement, or openness).
+3. Speak directly to the person in the second person (\"You are someone who...\", \"You tend to...\").
+4. AVOID ALL PSYCHOLOGICAL JARGON (do NOT use words like archetype, individuation, ego, shadow, persona, cognitive function, rubedo, temenos, etc.). Use warm, insightful, conversational language that any everyday person will instantly understand and relate to.
 
 Return ONLY valid JSON in this exact format:
 {
   \"traits\": [
     {
-      \"name\": \"Trait Name\",
+      \"name\": \"Clear Character Trait (e.g., Calm & Reflective Mindset)\",
+      \"score\": 92,
+      \"anchor\": \"Specific room feature\",
+      \"explanation\": \"First simple paragraph defining this primary trait...\"
+    },
+    {
+      \"name\": \"Clear Character Trait (e.g., Selective & Sincere Connector)\",
       \"score\": 88,
-      \"anchor\": \"Specific object or feature identified\",
-      \"explanation\": \"Your [anchor] represents [symbolic interpretation with Jungian framing]. You tend to [personality implication]. Growth insight: [concrete actionable suggestion].\"
+      \"anchor\": \"Specific room feature\",
+      \"explanation\": \"Second simple paragraph defining their social and emotional style...\"
+    },
+    {
+      \"name\": \"Clear Character Trait (e.g., Practical & Grounded Problem-Solver)\",
+      \"score\": 85,
+      \"anchor\": \"Specific room feature\",
+      \"explanation\": \"Third simple paragraph defining their daily habits and response to stress...\"
     }
   ],
-  \"summary\": \"Overall Jungian psychological synthesis...\"
+  \"summary\": \"Paragraph 1\n\nParagraph 2\n\nParagraph 3\",
+  \"paragraphs\": [
+    \"Paragraph 1 text...\",
+    \"Paragraph 2 text...\",
+    \"Paragraph 3 text...\"
+  ]
 }";
 
         $payload = [
@@ -209,26 +215,26 @@ Return ONLY valid JSON in this exact format:
 
         $traits = [
             [
-                'name' => 'Emotional Hearth',
-                'score' => 89,
-                'anchor' => $hasFireplace ? 'Your stone fireplace' : 'Your central seating arrangement',
-                'explanation' => ($hasFireplace ? 'Your central hearth' : 'Your central seating arrangement') . " represents exceptional emotional empathy and interpersonal stability, acting as an archetypal Self around which domestic warmth gathers. In your personal relationships, you tend to absorb emotional turbulence and anchor those around you, frequently prioritizing shared harmony over individual needs. Growth insight: Practice intentional emotional boundaries during external conflicts so your empathy remains a conscious gift rather than an exhausting obligation."
+                'name' => 'Calm & Reflective Mindset',
+                'score' => 90,
+                'anchor' => $hasFireplace ? 'Your stone fireplace' : 'Your comfortable central seating arrangement',
+                'explanation' => "You are someone who deeply values peace, quiet, and comfort in your daily life. When the world outside gets hectic, you recharge by stepping back into your personal sanctuary to relax and process your thoughts without unnecessary noise. Having a dedicated, warm focal point in your room gives you a strong sense of grounding, helping you stay centered and emotionally balanced throughout your week."
             ],
             [
-                'name' => 'Reflective Sanctum',
+                'name' => 'Selective & Sincere Connector',
+                'score' => 86,
+                'anchor' => $hasBookshelves ? 'Your organized bookshelves' : 'Your structured, welcoming room layout',
+                'explanation' => "In your relationships, you value genuine, meaningful connections over superficial socializing. You connect most naturally in one-on-one conversations or small, trusted circles where you can be authentic and comfortable. While you are a warm and attentive listener who cares deeply about close friends and family, you also know how to protect your personal boundaries so you don't overextend yourself."
+            ],
+            [
+                'name' => 'Practical & Grounded Problem-Solver',
                 'score' => 84,
-                'anchor' => $hasBookshelves ? 'Your built-in bookshelves' : 'Your structured perimeter walls',
-                'explanation' => ($hasBookshelves ? 'Your curated bookshelves' : 'Your structured perimeter walls') . " reflect an introverted intuitive function, signifying a sanctuary where inner knowledge is organized to fend off chaos. When facing rapid lifestyle changes, you tend to retreat into intellectual contemplation rather than making immediate, visceral decisions. Growth insight: Ground your contemplative insights into tangible physical action before intellectualizing away the momentum."
-            ],
-            [
-                'name' => 'Guarded Persona',
-                'score' => 81,
-                'anchor' => $hasClosedDoors ? 'The firmly closed door' : 'The enclosed architectural boundary',
-                'explanation' => ($hasClosedDoors ? 'The firmly closed door' : 'The enclosed architectural boundary') . " symbolizes a protective Persona, shielding your vulnerable inner sanctum from unvetted external intrusion. You tend to be intensely selective with whom you share your genuine emotional core, projecting composed competence while keeping uncertainties concealed. Growth insight: Offer trusted companions honest glimpses of your unfinished dilemmas rather than presenting only perfected conclusions."
+                'anchor' => $hasClosedDoors ? 'The clean, enclosed doorways' : 'The orderly, uncluttered room perimeter',
+                'explanation' => "In your daily routines and under stress, you rely on a steady, practical approach to work through challenges. Rather than letting uncertainty or chaos overwhelm you, you naturally focus on what you can control, breaking tasks down step by step until calm is restored. Your natural strength is staying composed under pressure, offering steady common sense and reliable clarity to those around you."
             ]
         ];
 
-        $summary = "Your space manifests an archetypal quest for psychological equilibrium between intimate warmth and protective containment. The structural boundaries and deliberate focal points reveal a strong ego orientation capable of holding emotional depth, while your subconscious seeks a sacred sanctuary protected from external demands.";
+        $summary = $traits[0]['explanation'] . "\n\n" . $traits[1]['explanation'] . "\n\n" . $traits[2]['explanation'];
 
         return [
             'candidates' => [

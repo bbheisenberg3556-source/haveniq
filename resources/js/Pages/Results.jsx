@@ -144,8 +144,8 @@ export default function Results({ sessionId }) {
             {/* Psychological Architecture Section */}
             <section className="personality-section">
                 <div className="section-header">
-                    <h2 className="section-title">Psychological Architecture</h2>
-                    <p className="section-subtitle">Decoding the subconscious symbolism and archetypal resonance of your chosen environment.</p>
+                    <h2 className="section-title">Personality & Character Profile</h2>
+                    <p className="section-subtitle">Defining your personality and primary character traits through your living space.</p>
                 </div>
                 
                 {personality_profile?.traits && personality_profile.traits.length > 0 ? (
@@ -154,11 +154,11 @@ export default function Results({ sessionId }) {
                             <div key={index} className="trait-card">
                                 <div className="trait-header">
                                     <h3 className="trait-name">{trait.name}</h3>
-                                    <span className="trait-score">{trait.score}% Match</span>
+                                    <span className="trait-score">{trait.score}% Prominence</span>
                                 </div>
                                 {trait.anchor && (
                                     <span className="trait-anchor-tag">
-                                        ✦ Anchor: {trait.anchor}
+                                        ✦ Feature: {trait.anchor}
                                     </span>
                                 )}
                                 <p className="trait-explanation">{trait.explanation}</p>
@@ -167,16 +167,16 @@ export default function Results({ sessionId }) {
                     </div>
                 ) : (
                     <div className="glass-card" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)', marginBottom: '2rem' }}>
-                        <p>Psychological analysis is being finalized...</p>
+                        <p>Personality profile is being finalized...</p>
                     </div>
                 )}
 
                 {personality_profile?.summary && (
                     <div className="summary-card">
                         <h3 className="summary-title">
-                            <span>✦</span> Overall Synthesis & Individuation Path
+                            <span>✦</span> Personality & Character Summary
                         </h3>
-                        <p className="summary-body">{personality_profile.summary}</p>
+                        <div className="summary-body" style={{ whiteSpace: 'pre-line' }}>{personality_profile.summary}</div>
                     </div>
                 )}
             </section>

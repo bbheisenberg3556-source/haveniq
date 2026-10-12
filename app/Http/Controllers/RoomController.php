@@ -87,6 +87,7 @@ class RoomController extends Controller
         $profileData = $profile ? [
             'traits' => $profile->traits,
             'summary' => $profile->summary,
+            'paragraphs' => is_array($profile->traits) ? array_column($profile->traits, 'explanation') : [],
         ] : null;
 
         return response()->json([
@@ -125,6 +126,7 @@ class RoomController extends Controller
             $profileData = $profile ? [
                 'traits' => $profile->traits,
                 'summary' => $profile->summary,
+                'paragraphs' => is_array($profile->traits) ? array_column($profile->traits, 'explanation') : [],
             ] : null;
 
             return response()->json([

@@ -368,13 +368,26 @@ class GenerateRoomImageJob implements ShouldQueue
                 }
                 if (is_array($decList) && !empty($decList)) {
                     foreach ($decList as $d) {
-                        if (!str_contains(strtolower($d), 'painting') && !str_contains(strtolower($d), 'poster')) {
-                            $artParts[] = $d;
+                        $lowerD = strtolower(trim($d));
+                        if (str_contains($lowerD, 'painting') || str_contains($lowerD, 'poster')) {
+                            continue;
+                        }
+
+                        if (str_contains($lowerD, 'clock')) {
+                            $artParts[] = "a single wall clock mounted cleanly";
+                        } elseif (str_contains($lowerD, 'tapestr')) {
+                            $artParts[] = "a single fabric wall tapestry";
+                        } elseif (str_contains($lowerD, 'wreath')) {
+                            $artParts[] = "a single decorative wreath";
+                        } elseif (str_contains($lowerD, 'sculptur') || str_contains($lowerD, 'art')) {
+                            $artParts[] = "a single accent wall piece";
+                        } else {
+                            $artParts[] = "a single " . rtrim($lowerD, 's');
                         }
                     }
                 }
                 if (!empty($artParts)) {
-                    $wallFeatures[] = "Wall {$w} is curated with " . implode(' and ', array_unique($artParts));
+                    $wallFeatures[] = "Wall {$w} features " . implode(' and ', array_unique($artParts));
                 }
             }
 

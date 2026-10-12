@@ -10,6 +10,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::prefix('v1')->group(function () {
     Route::post('/rooms', [RoomController::class, 'store']);
+    Route::post('/rooms/{sessionId}/revise', [RoomController::class, 'revise']);
     Route::get('/rooms/{sessionId}', [RoomController::class, 'show']);
     Route::get('/rooms/{sessionId}/status', [RoomController::class, 'status']);
     Route::get('/checklist-config', [RoomController::class, 'checklistConfig']);

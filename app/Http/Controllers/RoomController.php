@@ -160,4 +160,49 @@ class RoomController extends Controller
     {
         return response()->json(config('checklist'));
     }
+
+    /**
+     * Revise an existing room generation with user instructions (Option B).
+     */
+    public function revise(Request $request, $sessionId)
+    {
+        try {
+            $request->validate([
+                'prompt' => 'required|string|max:1000',
+            ]);
+
+            $room = Room::where('session_id', $sessionId)->firstOrFail();
+
+            // Retrieve base prompt from previous generation or synthesize from checklist
+            $lastGenerated = \App\Models\GeneratedRoom::where('room_id', $room->id)->latest()->first();
+            $basePrompt = $lastGenerated?->prompt;
+
+            if (empty($basePrompt)) {
+                $job = new GenerateRoomImageJob($room);
+                $basePrompt = $job->buildPrompt($room);
+            }
+
+            $userTweak = trim($request->input('prompt'));
+            $revisedPrompt = "{$basePrompt} USER REVISION REQUIREMENT: The user has requested the following adjustment: \"{$userTweak}\". Explicitly update the scene to reflect this instruction accurately while keeping the overall architectural design cohesive and photorealistic.";
+
+            // Reset status to generating
+            $room->update(['status' => 'generating']);
+
+            // Dispatch GenerateRoomImageJob with the revised prompt
+            GenerateRoomImageJob::dispatch($room, $revisedPrompt);
+
+            return response()->json([
+                'message' => 'Room revision initiated successfully',
+                'session_id' => $room->session_id,
+                'status' => 'generating',
+                'revision_prompt' => $userTweak,
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error("RoomController::revise failed: " . $e->getMessage());
+            return response()->json([
+                'error' => true,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

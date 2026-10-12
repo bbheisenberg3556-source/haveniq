@@ -20,10 +20,12 @@ class GenerateRoomImageJob implements ShouldQueue
 
     public $timeout = 600; // 10 minutes max
     protected Room $room;
+    protected ?string $customPrompt;
 
-    public function __construct(Room $room)
+    public function __construct(Room $room, ?string $customPrompt = null)
     {
         $this->room = $room;
+        $this->customPrompt = $customPrompt;
     }
 
     public function handle(ReplicateService $replicateService): void
@@ -31,8 +33,8 @@ class GenerateRoomImageJob implements ShouldQueue
         try {
             $this->room->update(['status' => 'generating']);
 
-            // Build prompt
-            $prompt = $this->buildPrompt($this->room);
+            // Build prompt or use custom revision prompt
+            $prompt = $this->customPrompt ?: $this->buildPrompt($this->room);
 
             // Attempt generation via Replicate API
             $prediction = $replicateService->generateImage($prompt);
@@ -172,7 +174,7 @@ class GenerateRoomImageJob implements ShouldQueue
         $this->room->update(['status' => 'completed']);
     }
 
-    protected function buildPrompt(Room $room): string
+    public function buildPrompt(Room $room): string
     {
         $data = $room->checklist_data ?? [];
 
